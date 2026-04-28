@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: BBSE - BuddyBoss Snippet Engine
- * Plugin URI: https://example.com/bbse
+ * Plugin URI: https://nayeemch.github.io/bb-snippet-engine/
  * Description: A modular snippet engine for BuddyBoss that lets you add, manage, and organize custom PHP, JS, and CSS code blocks to extend functionality and customize design—without modifying core files.
  * Version: 1.0.0
  * Author: BBSE
