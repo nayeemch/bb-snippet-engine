@@ -173,7 +173,7 @@ class BBSE_Admin {
                 </button>
                 <button type="button" class="bbse-btn bbse-btn-secondary" id="bbse-sync-remote">
                     <span class="dashicons dashicons-update"></span>
-                    <?php esc_html_e( 'Sync from Gist', 'bbse' ); ?>
+                    <?php esc_html_e( 'Sync from Knowledgebase', 'bbse' ); ?>
                 </button>
                 <?php if ( ! empty( $blocks ) ) : ?>
                 <button type="button" class="bbse-btn bbse-btn-danger bbse-btn-delete-all" id="bbse-delete-all">
