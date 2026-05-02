@@ -90,10 +90,19 @@ class BBSE_Admin {
             true
         );
 
+        $per_page    = 12;
+        $total_count  = BBSE_Database::count_blocks();
+        $active_count = BBSE_Database::count_active_blocks();
+
         wp_localize_script( 'bbse-admin', 'bbse', array(
             'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
             'nonce'      => wp_create_nonce( 'bbse_nonce' ),
-            'pagination' => array( 'perPage' => 12 ),
+            'pagination' => array(
+                'perPage'     => $per_page,
+                'totalBlocks' => $total_count,
+                'totalPages'  => (int) ceil( $total_count / $per_page ),
+                'activeCount' => $active_count,
+            ),
             'strings'    => array(
                 'activate'   => __( 'Activated', 'bbse' ),
                 'deactivate' => __( 'Deactivated', 'bbse' ),
@@ -119,9 +128,15 @@ class BBSE_Admin {
     }
 
     public static function render_page() {
-        $blocks       = BBSE_Database::get_all_blocks();
-        $total_count  = count( $blocks );
-        $active_count = count( array_filter( $blocks, fn( $b ) => ! empty( $b['is_active'] ) ) );
+        $listing      = BBSE_Database::get_blocks_for_listing( array(
+            'page'     => 1,
+            'per_page' => 12,
+            'orderby'  => 'is_active',
+            'order'    => 'DESC',
+        ) );
+        $blocks       = $listing['items'];
+        $total_count  = $listing['total'];
+        $active_count = BBSE_Database::count_active_blocks();
         ?>
         <div class="wrap bbse-wrap">
             <div class="bbse-header">
@@ -263,11 +278,11 @@ class BBSE_Admin {
         return $settings;
     }
 
-    private static function render_block_card( $block ) {
+    public static function render_block_card( $block ) {
         $is_active = ! empty( $block['is_active'] );
-        $has_css   = ! empty( trim( $block['css_code'] ?? '' ) );
-        $has_js    = ! empty( trim( $block['js_code'] ?? '' ) );
-        $has_php   = ! empty( trim( $block['php_code'] ?? '' ) );
+        $has_css   = ! empty( $block['has_css'] );
+        $has_js    = ! empty( $block['has_js'] );
+        $has_php   = ! empty( $block['has_php'] );
         $types     = array_filter( array(
             $has_css ? 'CSS' : null,
             $has_js ? 'JS' : null,

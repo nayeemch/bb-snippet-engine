@@ -201,6 +201,13 @@
     box-shadow: 0 0 0 3px rgba(232, 109, 42, 0.15);
 }
 
+/* ----- Loading state (server-side pagination) ----- */
+.bbse-blocks-grid.bbse-loading {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.15s;
+}
+
 /* ----- No results & hidden cards ----- */
 .bbse-no-results {
     grid-column: 1 / -1;

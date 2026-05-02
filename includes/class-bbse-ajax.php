@@ -17,6 +17,7 @@ class BBSE_Ajax {
         add_action( 'wp_ajax_bbse_create_block', array( __CLASS__, 'create_block' ) );
         add_action( 'wp_ajax_bbse_get_block', array( __CLASS__, 'get_block' ) );
         add_action( 'wp_ajax_bbse_sync_remote_blocks', array( __CLASS__, 'sync_remote_blocks' ) );
+        add_action( 'wp_ajax_bbse_get_blocks_page', array( __CLASS__, 'get_blocks_page' ) );
     }
 
     public static function sync_remote_blocks() {
@@ -97,11 +98,11 @@ class BBSE_Ajax {
             }
         }
 
-        $new_status = BBSE_Database::toggle_block( $id );
-        $block = BBSE_Database::get_block( $id );
+        $block_name = $block['name'];
+        $new_status = BBSE_Database::toggle_block( $id, $block );
         $message = $new_status
-            ? sprintf( __( 'Block "%s" activated successfully.', 'bbse' ), esc_html( $block['name'] ) )
-            : sprintf( __( 'Block "%s" deactivated successfully.', 'bbse' ), esc_html( $block['name'] ) );
+            ? sprintf( __( 'Block "%s" activated successfully.', 'bbse' ), esc_html( $block_name ) )
+            : sprintf( __( 'Block "%s" deactivated successfully.', 'bbse' ), esc_html( $block_name ) );
 
         wp_send_json_success( array(
             'is_active' => (bool) $new_status,
@@ -212,6 +213,38 @@ class BBSE_Ajax {
 
         BBSE_Database::delete_all_blocks();
         wp_send_json_success( array( 'message' => __( 'All blocks deleted.', 'bbse' ) ) );
+    }
+
+    public static function get_blocks_page() {
+        check_ajax_referer( 'bbse_nonce', 'nonce' );
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => __( 'Unauthorized', 'bbse' ) ) );
+        }
+
+        $args = array(
+            'page'     => isset( $_GET['page_num'] ) ? absint( $_GET['page_num'] ) : 1,
+            'per_page' => isset( $_GET['per_page'] ) ? absint( $_GET['per_page'] ) : 12,
+            'search'   => isset( $_GET['search'] )   ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '',
+            'orderby'  => isset( $_GET['orderby'] )  ? sanitize_key( $_GET['orderby'] ) : 'id',
+            'order'    => isset( $_GET['order'] )     ? sanitize_key( $_GET['order'] )   : 'DESC',
+        );
+
+        $result = BBSE_Database::get_blocks_for_listing( $args );
+
+        ob_start();
+        foreach ( $result['items'] as $block ) {
+            BBSE_Admin::render_block_card( $block );
+        }
+        $html = ob_get_clean();
+
+        wp_send_json_success( array(
+            'html'         => $html,
+            'total'        => $result['total'],
+            'active_total' => BBSE_Database::count_active_blocks(),
+            'page'         => $args['page'],
+            'per_page'     => $args['per_page'],
+            'total_pages'  => (int) ceil( $result['total'] / max( 1, $args['per_page'] ) ),
+        ) );
     }
 
     public static function create_block() {
