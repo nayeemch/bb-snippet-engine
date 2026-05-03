@@ -452,11 +452,219 @@
       max-width: 1100px;
     }
 
+    /* ── BLOCKS LIBRARY ── */
+    .blocks-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+    }
+
+    .blocks-search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      max-width: 360px;
+    }
+
+    .blocks-search-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .blocks-search-input {
+      width: 100%;
+      padding: 9px 14px 9px 38px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .blocks-search-input::placeholder { color: var(--muted); }
+    .blocks-search-input:focus { border-color: rgba(232,112,10,0.5); }
+
+    .blocks-filter-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .filter-chip {
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .filter-chip:hover,
+    .filter-chip.active {
+      background: rgba(232,112,10,0.12);
+      border-color: rgba(232,112,10,0.35);
+      color: var(--orange-light);
+    }
+
+    .blocks-meta {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    /* Card grid */
+    .lib-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+      min-height: 200px;
+    }
+
+    .lib-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.2s, transform 0.18s;
+    }
+
+    .lib-card:hover {
+      border-color: rgba(232,112,10,0.3);
+      transform: translateY(-2px);
+    }
+
+    .lib-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .lib-num {
+      width: 26px; height: 26px;
+      border-radius: 7px;
+      background: rgba(232,112,10,0.1);
+      border: 1px solid rgba(232,112,10,0.18);
+      color: var(--orange-light);
+      font-size: 0.7rem;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .lib-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      line-height: 1.45;
+      flex: 1;
+    }
+
+    .lib-badges {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .lib-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px;
+      letter-spacing: 0.3px;
+    }
+
+    .lib-badge-css { background: rgba(66,133,244,0.12); color: #7baaf7; border: 1px solid rgba(66,133,244,0.2); }
+    .lib-badge-js  { background: rgba(251,188,4,0.1);   color: #fcd34d; border: 1px solid rgba(251,188,4,0.2); }
+    .lib-badge-php { background: rgba(139,92,246,0.1);  color: #c4b5fd; border: 1px solid rgba(139,92,246,0.2); }
+
+    /* Loading / empty states */
+    .lib-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .lib-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(232,112,10,0.15);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Pagination */
+    .lib-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .lib-page-btn {
+      min-width: 36px; height: 36px;
+      padding: 0 10px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+
+    .lib-page-btn:hover:not(:disabled) {
+      border-color: rgba(232,112,10,0.4);
+      color: var(--orange-light);
+    }
+
+    .lib-page-btn.active {
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .lib-page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .lib-page-ellipsis {
+      width: 32px; height: 36px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 0.875rem;
+    }
+
+    .lib-page-info {
+      font-size: 0.8rem;
+      color: var(--muted);
+      width: 100%;
+      text-align: center;
+      margin-top: 6px;
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 640px) {
       .nav-links { display: none; }
       .code-types { grid-template-columns: 1fr; }
       .hero-stats { gap: 1.5rem; }
+      .blocks-meta { display: none; }
     }
   </style>
 </head>
@@ -506,7 +714,7 @@
       <span class="stat-label">Sample blocks</span>
     </div>
     <div class="stat-item">
-      <span class="stat-num">200+</span>
+      <span class="stat-num" id="hero-blocks-count">530+</span>
       <span class="stat-label">Importable blocks</span>
     </div>
     <div class="stat-item">
@@ -591,49 +799,39 @@
 
 <div class="divider"></div>
 
-<!-- SAMPLE BLOCKS -->
+<!-- BLOCKS LIBRARY -->
 <section id="blocks">
   <div class="container">
-    <span class="section-label">Ships ready-to-use</span>
-    <h2 class="section-title">8 sample blocks, 200+ importable</h2>
+    <span class="section-label">Knowledgebase library</span>
+    <h2 class="section-title"><span id="lib-total-label">530+</span> ready-to-import code blocks</h2>
     <p class="section-desc">
-      BBSE ships with 8 inactive sample blocks for common BuddyBoss customizations. Hundreds more can be imported from a remote Gist library.
+      Browse every snippet available in the remote Knowledgebase. Import any of them into BBSE with one click from the plugin's Sync button.
     </p>
 
-    <div class="blocks-grid">
-      <div class="block-card">
-        <div class="block-num">01</div>
-        <h4>BuddyBoss Full Width Layout</h4>
+    <div class="blocks-controls">
+      <div class="blocks-search-wrap">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 6.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-.889 3.182a4.5 4.5 0 1 1 .707-.707l2.854 2.853a.5.5 0 0 1-.708.708L9.111 9.682Z" fill="currentColor"/>
+        </svg>
+        <input type="search" id="lib-search" class="blocks-search-input" placeholder="Search blocks…" autocomplete="off" />
       </div>
-      <div class="block-card">
-        <div class="block-num">02</div>
-        <h4>Activity Image Glass Filter</h4>
+      <div class="blocks-filter-group">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="css">CSS</button>
+        <button class="filter-chip" data-filter="js">JS</button>
+        <button class="filter-chip" data-filter="php">PHP</button>
       </div>
-      <div class="block-card">
-        <div class="block-num">03</div>
-        <h4>Back to Top Button</h4>
-      </div>
-      <div class="block-card">
-        <div class="block-num">04</div>
-        <h4>Center Login Logo</h4>
-      </div>
-      <div class="block-card">
-        <div class="block-num">05</div>
-        <h4>Remove WordPress from Site Title</h4>
-      </div>
-      <div class="block-card">
-        <div class="block-num">06</div>
-        <h4>Auto-approve Pending Registrations</h4>
-      </div>
-      <div class="block-card">
-        <div class="block-num">07</div>
-        <h4>Disable Enter Key in Private Messages</h4>
-      </div>
-      <div class="block-card">
-        <div class="block-num">08</div>
-        <h4>Change "Sign In" Button Text</h4>
+      <span class="blocks-meta" id="lib-meta"></span>
+    </div>
+
+    <div class="lib-grid" id="lib-grid">
+      <div class="lib-state">
+        <div class="lib-spinner"></div>
+        <p>Loading blocks from Knowledgebase…</p>
       </div>
     </div>
+
+    <div class="lib-pagination" id="lib-pagination"></div>
   </div>
 </section>
 
@@ -722,6 +920,168 @@
     </div>
   </div>
 </section>
+
+<script>
+(function () {
+  const GIST_RAW_URL = 'https://gist.githubusercontent.com/nayeemch/93e3690d7776ef2b1f67c67fa2d49d49/raw/aobb_scraped_gist.json';
+  const PER_PAGE = 24;
+
+  let allBlocks   = [];
+  let filtered    = [];
+  let currentPage = 1;
+  let activeFilter = 'all';
+  let searchQuery  = '';
+
+  // ── helpers ──────────────────────────────────────────────────────────────
+
+  function hasCss(b)  { return b.css_code  && b.css_code.trim()  !== ''; }
+  function hasJs(b)   { return b.js_code   && b.js_code.trim()   !== ''; }
+  function hasPhp(b)  { return b.php_code  && b.php_code.trim()  !== ''; }
+
+  function badgesHtml(b) {
+    let h = '<div class="lib-badges">';
+    if (hasCss(b))  h += '<span class="lib-badge lib-badge-css">CSS</span>';
+    if (hasJs(b))   h += '<span class="lib-badge lib-badge-js">JS</span>';
+    if (hasPhp(b))  h += '<span class="lib-badge lib-badge-php">PHP</span>';
+    if (!hasCss(b) && !hasJs(b) && !hasPhp(b))
+      h += '<span class="lib-badge" style="border-color:rgba(255,255,255,0.12);color:var(--muted)">Empty</span>';
+    h += '</div>';
+    return h;
+  }
+
+  function pagRange(cur, total) {
+    if (total <= 7) return Array.from({length: total}, (_, i) => i + 1);
+    if (cur <= 4)   return [1,2,3,4,5,'…',total];
+    if (cur >= total - 3) return [1,'…',total-4,total-3,total-2,total-1,total];
+    return [1,'…',cur-1,cur,cur+1,'…',total];
+  }
+
+  // ── render ────────────────────────────────────────────────────────────────
+
+  function applyFilter() {
+    const q = searchQuery.toLowerCase();
+    filtered = allBlocks.filter(b => {
+      const matchSearch = !q || b.name.toLowerCase().includes(q);
+      const matchFilter =
+        activeFilter === 'all' ? true :
+        activeFilter === 'css' ? hasCss(b) :
+        activeFilter === 'js'  ? hasJs(b)  :
+        hasPhp(b);
+      return matchSearch && matchFilter;
+    });
+    currentPage = 1;
+    render();
+  }
+
+  function render() {
+    const grid  = document.getElementById('lib-grid');
+    const pgBar = document.getElementById('lib-pagination');
+    const meta  = document.getElementById('lib-meta');
+
+    const total   = filtered.length;
+    const pages   = Math.max(1, Math.ceil(total / PER_PAGE));
+    if (currentPage > pages) currentPage = pages;
+
+    const start = (currentPage - 1) * PER_PAGE;
+    const slice = filtered.slice(start, start + PER_PAGE);
+
+    // Meta label
+    const from = total === 0 ? 0 : start + 1;
+    const to   = Math.min(start + PER_PAGE, total);
+    meta.textContent = total === 0 ? 'No results' : `Showing ${from}–${to} of ${total}`;
+
+    // Grid
+    if (slice.length === 0) {
+      grid.innerHTML = '<div class="lib-state"><p>No blocks match your search.</p></div>';
+    } else {
+      grid.innerHTML = slice.map((b, i) => {
+        const num = String(start + i + 1).padStart(2, '0');
+        return `<div class="lib-card">
+          <div class="lib-card-top">
+            <div class="lib-num">${num}</div>
+            <div class="lib-name">${escHtml(b.name)}</div>
+          </div>
+          ${badgesHtml(b)}
+        </div>`;
+      }).join('');
+    }
+
+    // Pagination
+    if (pages <= 1) { pgBar.innerHTML = ''; return; }
+
+    const range = pagRange(currentPage, pages);
+    let btns = '';
+    btns += `<button class="lib-page-btn" data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''} aria-label="Previous">&#8592;</button>`;
+    range.forEach(p => {
+      if (p === '…') {
+        btns += `<span class="lib-page-ellipsis">…</span>`;
+      } else {
+        btns += `<button class="lib-page-btn${p === currentPage ? ' active' : ''}" data-page="${p}" aria-label="Page ${p}">${p}</button>`;
+      }
+    });
+    btns += `<button class="lib-page-btn" data-page="${currentPage + 1}" ${currentPage === pages ? 'disabled' : ''} aria-label="Next">&#8594;</button>`;
+    btns += `<span class="lib-page-info">Page ${currentPage} of ${pages}</span>`;
+    pgBar.innerHTML = btns;
+
+    // Scroll to section on page change (not on first load)
+    if (start > 0) {
+      document.getElementById('blocks').scrollIntoView({behavior: 'smooth', block: 'start'});
+    }
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── events ────────────────────────────────────────────────────────────────
+
+  let searchTimer;
+  document.getElementById('lib-search').addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { searchQuery = this.value; applyFilter(); }, 250);
+  });
+
+  document.querySelectorAll('.filter-chip').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+      activeFilter = this.dataset.filter;
+      applyFilter();
+    });
+  });
+
+  document.getElementById('lib-pagination').addEventListener('click', function (e) {
+    const btn = e.target.closest('.lib-page-btn');
+    if (!btn || btn.disabled) return;
+    const page = parseInt(btn.dataset.page, 10);
+    if (!isNaN(page)) { currentPage = page; render(); }
+  });
+
+  // ── fetch ─────────────────────────────────────────────────────────────────
+
+  fetch(GIST_RAW_URL)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(data => {
+      allBlocks = data.blocks || [];
+
+      // Update counters
+      const count = allBlocks.length;
+      const countStr = count + '+';
+      const heroEl = document.getElementById('hero-blocks-count');
+      const libEl  = document.getElementById('lib-total-label');
+      if (heroEl) heroEl.textContent = countStr;
+      if (libEl)  libEl.textContent  = countStr;
+
+      filtered = allBlocks.slice();
+      render();
+    })
+    .catch(() => {
+      document.getElementById('lib-grid').innerHTML =
+        '<div class="lib-state"><p>Could not load blocks. Please check your connection and try again.</p></div>';
+    });
+
+})();
+</script>
 
 <!-- FOOTER -->
 <footer>
