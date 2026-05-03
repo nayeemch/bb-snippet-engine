@@ -178,24 +178,6 @@ BBSE creates a single table: `{prefix}bbse_blocks`
 
 **Indexes:** `PRIMARY KEY (id)`, `KEY remote_id_idx (remote_id)`, `KEY source_type_idx (source_type)`, `KEY is_active_idx (is_active)` *(added in v1.1.0)*.
 
-> **Migrating from an older install?** If you previously used the plugin under its old name (AoBB), the database table `{prefix}addon_bb_blocks` is automatically renamed to `{prefix}bbse_blocks` on the first page load after upgrading.
-
----
-
-## Changelog
-
-### 1.1.0
-- **Performance:** admin page now uses a server-side lightweight listing query — no longtext columns fetched on list view.
-- **Performance:** search, sort, and pagination are now server-side AJAX — 12 cards rendered at a time instead of all 530+.
-- **Performance:** frontend injector caches active blocks in a 5-minute transient — reduces 3 DB queries per page to 1.
-- **Performance:** added `is_active_idx` database index for faster `WHERE is_active = 1` lookups.
-- **Performance:** toggle AJAX handler fixed — eliminates redundant re-fetch after UPDATE (3 queries → 1 SELECT + 1 UPDATE).
-- **Cache invalidation:** transient automatically cleared on toggle, save, delete, and sync operations.
-- **Docs:** landing page (`docs/index.html`) now dynamically loads and paginates all Knowledgebase block titles live from the Gist.
-
-### 1.0.0
-- Initial release.
-
 ---
 
 ## Development Notes
