@@ -6,9 +6,9 @@ A modular snippet engine for BuddyBoss that lets you add, manage, and activate c
 
 ## Overview
 
-BBSE gives you a card-based admin UI to store and run code snippets scoped to your BuddyBoss site. Each snippet lives in its own block that can be switched on or off independently, validated before activation, and synced from a remote GitHub Gist.
+BBSE gives you a card-based admin UI to store and run code snippets scoped to your BuddyBoss site. Each snippet lives in its own block that can be switched on or off independently, validated before activation, and synced from a remote GitHub Gist Knowledgebase.
 
-It ships with 8 ready-to-use BuddyBoss customization snippets so you have something to work with immediately.
+It ships with 8 ready-to-use BuddyBoss customization snippets, and 530+ additional blocks can be imported instantly from the remote Knowledgebase with one click.
 
 ---
 
@@ -51,7 +51,7 @@ Active blocks are injected automatically on every front-end page load:
 |---|---|
 | CSS | `<style>` tag in `<head>` via `wp_head` |
 | JavaScript | `<script>` tag in footer via `wp_footer` |
-| PHP | Executed server-side via `wp_head` (early priority) |
+| PHP | Executed server-side via `init` hook |
 
 ### PHP Safety Validation
 Before a PHP block is saved or activated, BBSE runs a syntax check using PHP's `token_get_all()` with the `TOKEN_PARSE` flag. This catches parse errors without executing the code, so a broken snippet can never cause a white screen.
@@ -63,15 +63,16 @@ Code pasted from web pages often contains invisible Unicode characters that brea
 - Prime (`′`), en dash (`–`), em dash (`—`), and angle quotation marks (`‹` `›`)
 
 ### Admin UI
-- **Live search** — filters cards as you type with a clear button.
+- **Server-side search** — debounced (350 ms) AJAX search — only the matching page of results is fetched.
+- **Server-side pagination** — the admin page renders 12 blocks at a time; navigating pages or changing the sort fires a lightweight AJAX request instead of reloading the page.
 - **Sort** — Active first (default), Inactive first, Name A–Z, Name Z–A, By type.
-- **Stats pill** — shows `X / Y blocks active` in the header, updated live on toggle and delete.
-- **Pagination** — 12 blocks per page with smart ellipsis navigation and a "Showing X–Y of Z" counter.
-- **New block highlight** — after creating a block it is pinned to the top with an orange **NEW** badge and a pulsing glow animation for 5 seconds.
+- **Stats pill** — shows `X / Y blocks active` in the header; the active counter updates live via delta on toggle.
+- **Pagination** — smart ellipsis navigation and a "Showing X–Y of Z" counter.
+- **New block highlight** — after creating a block it is highlighted with an orange **NEW** badge and a pulsing glow animation for 5 seconds.
 - **Glassmorphic card design** — frosted-glass cards and header controls styled with the BuddyBoss brand orange.
 
-### Remote Sync (GitHub Gist)
-Click **Sync from Gist** to pull a JSON block library from a GitHub Gist. BBSE will:
+### Remote Sync (Knowledgebase)
+Click **Sync from Knowledgebase** to pull a JSON block library from the configured GitHub Gist. BBSE will:
 - Create blocks that do not exist locally (`remote_id` matching).
 - Update existing remote blocks when the version changes.
 - Deactivate remote blocks that were removed from the Gist.
@@ -114,8 +115,22 @@ The plugin ships with 8 inactive sample blocks that cover common BuddyBoss custo
 
 All sample blocks are inactive by default.
 
-More than 200+ blocks can be imported from BuddyBoss custom code directory
+530+ additional blocks are available for import from the remote Knowledgebase via the **Sync from Knowledgebase** button.
 
+---
+
+## Performance
+
+BBSE is optimised to stay fast even with hundreds of imported blocks:
+
+| Area | Technique |
+|---|---|
+| Admin page load | Lightweight listing query — only metadata columns fetched, never longtext code content |
+| Admin pagination/search | Server-side AJAX — browser renders 12 cards at a time regardless of total block count |
+| Frontend injection | Active blocks cached in a 5-minute WordPress transient — reduces 3 DB queries per page load to 1 |
+| DB query speed | `is_active` column indexed — `WHERE is_active = 1` no longer does a full table scan |
+| Toggle AJAX | Pre-fetched block passed to update query — eliminates redundant SELECT after UPDATE |
+| Cache invalidation | Transient is deleted automatically on any write (toggle, save, delete, sync) |
 
 ---
 
@@ -123,16 +138,18 @@ More than 200+ blocks can be imported from BuddyBoss custom code directory
 
 ```
 bb-snippet-engine/
-├── bbse.php                          # Plugin entry point, constants, bootstrap
+├── bbse.php                          # Plugin entry point, constants, bootstrap (v1.1.0)
 ├── admin/
 │   └── class-bbse-admin.php          # Admin page rendering, asset enqueue
 ├── assets/
 │   ├── css/admin.css                 # Admin UI styles
 │   └── js/admin.js                   # Admin UI interactions (jQuery)
+├── docs/
+│   └── index.html                    # Public landing page (live Knowledgebase browser)
 └── includes/
-    ├── class-bbse-ajax.php           # AJAX handlers (create, save, delete, toggle, sync)
+    ├── class-bbse-ajax.php           # AJAX handlers (create, save, delete, toggle, sync, list)
     ├── class-bbse-database.php       # Database abstraction (wpdb wrapper)
-    ├── class-bbse-injector.php       # Front-end CSS / JS / PHP injection
+    ├── class-bbse-injector.php       # Front-end CSS / JS / PHP injection with transient cache
     └── class-bbse-remote-sync.php    # GitHub Gist sync service
 ```
 
@@ -150,22 +167,43 @@ BBSE creates a single table: `{prefix}bbse_blocks`
 | `js_code` | longtext | JavaScript snippet |
 | `php_code` | longtext | PHP snippet |
 | `is_active` | tinyint(1) | 1 = injected on front end |
+| `sort_order` | int | Reserved for manual ordering |
 | `source_type` | varchar(20) | `local` or `remote` |
 | `remote_id` | varchar(191) | Unique ID for remote-synced blocks |
 | `remote_version` | varchar(100) | Version string from the remote source |
 | `is_locked` | tinyint(1) | Reserved for future use |
+| `last_synced_at` | datetime | Timestamp of last remote sync for this block |
 | `created_at` | datetime | Auto-set on insert |
 | `updated_at` | datetime | Auto-updated on change |
 
+**Indexes:** `PRIMARY KEY (id)`, `KEY remote_id_idx (remote_id)`, `KEY source_type_idx (source_type)`, `KEY is_active_idx (is_active)` *(added in v1.1.0)*.
+
 > **Migrating from an older install?** If you previously used the plugin under its old name (AoBB), the database table `{prefix}addon_bb_blocks` is automatically renamed to `{prefix}bbse_blocks` on the first page load after upgrading.
+
+---
+
+## Changelog
+
+### 1.1.0
+- **Performance:** admin page now uses a server-side lightweight listing query — no longtext columns fetched on list view.
+- **Performance:** search, sort, and pagination are now server-side AJAX — 12 cards rendered at a time instead of all 530+.
+- **Performance:** frontend injector caches active blocks in a 5-minute transient — reduces 3 DB queries per page to 1.
+- **Performance:** added `is_active_idx` database index for faster `WHERE is_active = 1` lookups.
+- **Performance:** toggle AJAX handler fixed — eliminates redundant re-fetch after UPDATE (3 queries → 1 SELECT + 1 UPDATE).
+- **Cache invalidation:** transient automatically cleared on toggle, save, delete, and sync operations.
+- **Docs:** landing page (`docs/index.html`) now dynamically loads and paginates all Knowledgebase block titles live from the Gist.
+
+### 1.0.0
+- Initial release.
 
 ---
 
 ## Development Notes
 
 - The `BBSE_GIST_URL` constant in `bbse.php` controls which Gist is used for remote sync. Change it to point to your own Gist.
-- The **Delete All** button in the toolbar is intended for development use only. Remove the button block in `class-bbse-admin.php` and its AJAX handler before shipping.
+- The **Delete All** button in the toolbar is intended for development use only.
 - PHP code is validated with `token_get_all( '<?php ' . $code, TOKEN_PARSE )` — syntax-only, no execution.
+- The active blocks transient key is `bbse_active_blocks` (TTL 5 minutes). Clear it with `delete_transient('bbse_active_blocks')` or via any block write operation.
 
 ---
 
