@@ -666,6 +666,20 @@
       .hero-stats { gap: 1.5rem; }
       .blocks-meta { display: none; }
     }
+
+    .pulse-text {
+      display: inline-block; /* Required for transform to work on inline elements */
+      font-family: sans-serif;
+      font-size: 3rem;
+      color: #007bff;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
   </style>
 </head>
 <body>
@@ -678,7 +692,7 @@
   </a>
   <div class="nav-links">
     <a href="#features" class="nav-link">Features</a>
-    <a href="#blocks" class="nav-link">Sample Blocks</a>
+    <a href="#blocks" class="nav-link pulse-text" style="font-weight: bold; color: var(--orange);">528+ code blocks</a>
     <a href="#how-it-works" class="nav-link">How it works</a>
     <a href="https://github.com/nayeemch/bb-snippet-engine" class="btn btn-primary" target="_blank" rel="noopener">
       View on GitHub
